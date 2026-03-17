@@ -20,7 +20,7 @@ class BaselineModel(nn.Module):
     
     # forward function : defines the flow through the model
     def forward(self,x):
-         # x: (batch_size, sequence_length)
+        # x: (batch_size, sequence_length)
 
         x = self.embedding(x)
         # x: (batch_size, sequence_length, embed_dim)
@@ -33,4 +33,26 @@ class BaselineModel(nn.Module):
         # out: (batch_size, num_classes)
 
         return out
+    
+    
+# to test the initial baseline_model.py    
+#if __name__ == "__main__":
+
+#    # dummy input (batch_size=2, sequence_length=5)
+#    x = torch.randint(0, 100, (2, 5))
+
+#    # create model
+#    model = BaselineModel(
+#        vocab_size=100,
+#        embed_dim=50,
+#        hidden_dim=64,
+#        num_classes=3
+#    )
+
+#    # forward pass
+#    output = model(x)
+
+#    print("Input shape:", x.shape)
+#    print("Output shape:", output.shape)
+#    print("Output:", output)
 
