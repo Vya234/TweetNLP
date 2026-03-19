@@ -108,3 +108,6 @@ with torch.no_grad():
     accuracy = (predicted == y_val).sum().item() / len(y_val)
 
     print("Validation Accuracy:", accuracy)
+
+# save model
+torch.save(model.state_dict(), "model.pth")
