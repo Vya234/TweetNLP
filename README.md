@@ -1,4 +1,4 @@
-# 🐦 TweetNLP Sentiment Analysis (From Scratch)
+# TweetNLP Sentiment Analysis (From Scratch)
 
 This project implements sentiment analysis on tweets using deep learning models built from scratch using PyTorch.
 
