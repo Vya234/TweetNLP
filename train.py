@@ -67,15 +67,13 @@ X_val = torch.tensor(val_padded).to(device)
 y_val = torch.tensor(val_labels).to(device)
 
 
-# CHOOSE MODEL HERE
+# CHOOSE MODEL
 MODEL_TYPE = "improved"   # "baseline" or "improved"
 
 if MODEL_TYPE == "baseline":
     model = BaselineModel(vocab_size, 100, 128, 3)
-    save_path = "/kaggle/working/baseline_model.pth"
 else:
     model = ImprovedModel(vocab_size, 100, 128, 3)
-    save_path = "/kaggle/working/improved_model.pth"
 
 model = model.to(device)
 

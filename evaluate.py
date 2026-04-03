@@ -59,28 +59,26 @@ X_val = torch.tensor(val_padded).to(device)
 y_val = torch.tensor(val_labels).to(device)
 
 
-# CHOOSE MODEL HERE
-MODEL_TYPE = "improved"   # "baseline" or "improved"
+# CHOOSE MODEL
+MODEL_TYPE = "improved"   # or "baseline"
 
 if MODEL_TYPE == "baseline":
     model = BaselineModel(len(vocab)+1, 100, 128, 3)
-    if os.path.exists("/kaggle/input"):
-        load_path = "/kaggle/working/model.pth"
-    else:
-        load_path = "model.pth"
 else:
     model = ImprovedModel(len(vocab)+1, 100, 128, 3)
-    if os.path.exists("/kaggle/input"):
-        load_path = "/kaggle/working/model.pth"
-    else:
-        load_path = "model.pth"
 
+
+# Load model
+if os.path.exists("/kaggle/input"):
+    load_path = "/kaggle/working/model.pth"
+else:
+    load_path = "model.pth"
 
 model.load_state_dict(torch.load(load_path))
 model = model.to(device)
 
 
-# 6. Evaluation
+# Evaluation
 model.eval()
 
 with torch.no_grad():
@@ -88,7 +86,7 @@ with torch.no_grad():
     _, predicted = torch.max(outputs, 1)
 
 
-# 7. Metrics
+# Metrics
 num_classes = 3
 
 precision, recall, f1 = [], [], []
