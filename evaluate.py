@@ -60,7 +60,7 @@ y_val = torch.tensor(val_labels).to(device)
 
 
 # CHOOSE MODEL
-MODEL_TYPE = "improved"   # or "baseline"
+MODEL_TYPE = "improved"   # "baseline" or "improved"
 
 if MODEL_TYPE == "baseline":
     model = BaselineModel(len(vocab)+1, 100, 128, 3)
@@ -86,7 +86,7 @@ with torch.no_grad():
     _, predicted = torch.max(outputs, 1)
 
 
-# Metrics
+# ===== METRICS =====
 num_classes = 3
 
 precision, recall, f1 = [], [], []
@@ -106,7 +106,22 @@ for cls in range(num_classes):
     f1.append(f)
 
 
+print("\n===== METRICS =====")
 print("Precision:", precision)
 print("Recall:", recall)
 print("F1 Score:", f1)
 print("Average F1:", sum(f1) / num_classes)
+
+
+# ===== CONFUSION MATRIX =====
+print("\n===== CONFUSION MATRIX =====")
+
+conf_matrix = [[0]*num_classes for _ in range(num_classes)]
+
+for t, p in zip(y_val, predicted):
+    conf_matrix[t.item()][p.item()] += 1
+
+print("Rows = Actual, Columns = Predicted\n")
+
+for row in conf_matrix:
+    print(row)
