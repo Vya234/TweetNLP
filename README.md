@@ -22,6 +22,7 @@ This project implements sentiment analysis on tweets using deep learning models 
 ### 🔹 Improved Model
 - Embedding Layer
 - **Bidirectional LSTM (BiLSTM)**
+- **Attention Mechanism**
 - **Dropout (Regularization)**
 - Fully Connected Layer
 
@@ -47,6 +48,11 @@ TweetNLP/
 ├── utils.py                # Data processing functions
 └── README.md
 ```
+## 📊 Analysis
+
+The confusion matrix shows that the model performs best on neutral and positive classes, while negative samples are often misclassified as neutral. This suggests that neutral sentiment acts as a boundary class, making classification more challenging.
+
+The addition of the attention mechanism allows the model to focus on important words in a sentence, improving contextual understanding and leading to a consistent improvement in F1 score.
 
 ---
 
@@ -80,10 +86,11 @@ MODEL_TYPE = "improved"
 
 ## 📊 Results
 
-| Model    | Accuracy | Avg F1 Score |
-|----------|----------|--------------|
-| Baseline | ~0.627    | ~0.5909     |
-| Improved | ~0.628    | ~0.5936     |
+| Model                  | Accuracy | Avg F1 Score |
+|------------------------|----------|--------------|
+| Baseline               | ~0.627   | ~0.5909      |
+| BiLSTM                 | ~0.628   | ~0.5936      |
+| BiLSTM + Attention     | ~0.626   | ~0.5975      |
 
 ---
 
@@ -110,6 +117,12 @@ MODEL_TYPE = "improved"
 
 ---
 
+## ⭐ Conclusion
+
+The project demonstrates that incremental architectural improvements, such as BiLSTM and attention mechanisms, can enhance model performance without relying on pretrained models, while also providing insights into model behavior through detailed evaluation.
+
+---
+
 ## 📚 References
 
 - [TweetNLP Paper (Arxiv)](https://arxiv.org/abs/2206.14774)
@@ -120,4 +133,4 @@ MODEL_TYPE = "improved"
 ## 👩‍💻 Author
 
 **Kavya Rai**  
-CSE, IIT Kharagpur
+IIT Kharagpur
