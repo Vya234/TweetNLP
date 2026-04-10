@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 
 
 class ImprovedModel(nn.Module):
@@ -7,10 +8,10 @@ class ImprovedModel(nn.Module):
     def __init__(self, vocab_size, embed_dim, hidden_dim, num_classes):
         super(ImprovedModel, self).__init__()
 
-        # Embedding layer
+        # Embedding
         self.embedding = nn.Embedding(vocab_size, embed_dim)
 
-        # BiLSTM layer (bidirectional=True)
+        # BiLSTM
         self.lstm = nn.LSTM(
             embed_dim,
             hidden_dim,
@@ -18,34 +19,37 @@ class ImprovedModel(nn.Module):
             bidirectional=True
         )
 
-        # Dropout for regularization
+        # Attention layer
+        self.attention = nn.Linear(hidden_dim * 2, 1)
+
+        # Dropout
         self.dropout = nn.Dropout(0.5)
 
-        # Fully connected layer
-        # hidden_dim * 2 because BiLSTM has 2 directions
+        # Final layer
         self.fc = nn.Linear(hidden_dim * 2, num_classes)
 
     def forward(self, x):
-        # x: (batch_size, seq_len)
+        # x: (batch, seq_len)
 
         x = self.embedding(x)
-        # (batch_size, seq_len, embed_dim)
+        # (batch, seq_len, embed_dim)
 
-        lstm_out, (hidden, cell) = self.lstm(x)
+        lstm_out, _ = self.lstm(x)
+        # (batch, seq_len, hidden_dim*2)
 
-        # hidden shape: (num_layers * 2, batch_size, hidden_dim)
+        # Attention scores
+        attn_weights = self.attention(lstm_out)
+        # (batch, seq_len, 1)
 
-        # Take forward + backward last hidden states
-        forward_hidden = hidden[-2]
-        backward_hidden = hidden[-1]
+        attn_weights = torch.softmax(attn_weights, dim=1)
+        # normalize across sequence
 
-        # Concatenate both directions
-        combined = torch.cat((forward_hidden, backward_hidden), dim=1)
-        # (batch_size, hidden_dim * 2)
+        # Context vector
+        context = torch.sum(attn_weights * lstm_out, dim=1)
+        # (batch, hidden_dim*2)
 
-        x = self.dropout(combined)
+        x = self.dropout(context)
 
         out = self.fc(x)
-        # (batch_size, num_classes)
 
         return out
