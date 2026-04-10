@@ -18,7 +18,7 @@ else:
     BASE_PATH = "dataset"
 
 
-# 1. Load data
+# Load data
 train_texts, train_labels = load_data(
     os.path.join(BASE_PATH, "train_text.txt"),
     os.path.join(BASE_PATH, "train_labels.txt")
@@ -30,15 +30,15 @@ val_texts, val_labels = load_data(
 )
 
 
-# 2. Build vocab
+# Build vocab
 vocab = build_vocab(train_texts)
 
 
-# 3. Encode
+# Encode
 val_encoded = [encode_text(t, vocab) for t in val_texts]
 
 
-# 4. Padding
+# Padding
 def pad_sequences(sequences, max_len):
     padded = []
     for seq in sequences:
@@ -54,25 +54,21 @@ max_len = 30
 val_padded = pad_sequences(val_encoded, max_len)
 
 
-# 5. Tensor
+# Tensor
 X_val = torch.tensor(val_padded).to(device)
 y_val = torch.tensor(val_labels).to(device)
 
 
-# CHOOSE MODEL
-MODEL_TYPE = "improved"   # "baseline" or "improved"
+# MODEL SELECTION
+MODEL_TYPE = "improved"  # "baseline" or "improved"
 
 if MODEL_TYPE == "baseline":
     model = BaselineModel(len(vocab)+1, 100, 128, 3)
+    load_path = "baseline_model.pth"
 else:
     model = ImprovedModel(len(vocab)+1, 100, 128, 3)
+    load_path = "improved_model.pth"
 
-
-# Load model
-if os.path.exists("/kaggle/input"):
-    load_path = "/kaggle/working/model.pth"
-else:
-    load_path = "model.pth"
 
 model.load_state_dict(torch.load(load_path))
 model = model.to(device)
@@ -86,9 +82,8 @@ with torch.no_grad():
     _, predicted = torch.max(outputs, 1)
 
 
-# ===== METRICS =====
+# Metrics
 num_classes = 3
-
 precision, recall, f1 = [], [], []
 
 for cls in range(num_classes):
@@ -113,15 +108,21 @@ print("F1 Score:", f1)
 print("Average F1:", sum(f1) / num_classes)
 
 
-# ===== CONFUSION MATRIX =====
-print("\n===== CONFUSION MATRIX =====")
+# CONFUSION MATRIX (with labels)
 
 conf_matrix = [[0]*num_classes for _ in range(num_classes)]
 
 for t, p in zip(y_val, predicted):
     conf_matrix[t.item()][p.item()] += 1
 
+labels = ["Negative", "Neutral", "Positive"]
+
+print("\n===== CONFUSION MATRIX =====")
 print("Rows = Actual, Columns = Predicted\n")
 
-for row in conf_matrix:
-    print(row)
+# Header
+print(f"{'':<10} {'Pred_Neg':<10} {'Pred_Neu':<10} {'Pred_Pos':<10}")
+
+# Rows
+for i, row in enumerate(conf_matrix):
+    print(f"{labels[i]:<10} {row[0]:<10} {row[1]:<10} {row[2]:<10}")
